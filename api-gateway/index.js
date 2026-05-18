@@ -5,21 +5,19 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 
-// User Service
+// Use container names instead of localhost
 app.use('/api/users', createProxyMiddleware({
-  target: 'http://localhost:3001',
+  target: 'http://user-service:3001',
   changeOrigin: true
 }));
 
-// Menu Service
 app.use('/api/menu', createProxyMiddleware({
-  target: 'http://localhost:3002',
+  target: 'http://menu-service:3002',
   changeOrigin: true
 }));
 
-// Order Service
 app.use('/api/orders', createProxyMiddleware({
-  target: 'http://localhost:3003',
+  target: 'http://order-service:3003',
   changeOrigin: true
 }));
 

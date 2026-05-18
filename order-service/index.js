@@ -7,7 +7,8 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect('mongodb://localhost:27017/orderDB')
+const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/orderDB';
+mongoose.connect(MONGO_URL)
   .then(() => console.log('Order DB Connected!'))
   .catch(err => console.log(err));
 
