@@ -1,2 +1,6 @@
 node_modules/
-.env
+frontend/node_modules/
+api-gateway/node_modules/
+menu-service/node_modules/
+order-service/node_modules/
+user-service/node_modules/
