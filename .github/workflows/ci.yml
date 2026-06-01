@@ -12,14 +12,19 @@ jobs:
         service:
           - name: frontend
             path: frontend
+            image: restaurant-app-frontend
           - name: api-gateway
             path: api-gateway
+            image: restaurant-app-api-gateway
           - name: menu-service
             path: menu-service
+            image: restaurant-app-menu-service
           - name: order-service
             path: order-service
+            image: restaurant-app-order-service
           - name: user-service
             path: user-service
+            image: restaurant-app-user-service
 
     steps:
       - name: Checkout code
@@ -36,7 +41,7 @@ jobs:
         with:
           context: ./${{ matrix.service.path }}
           push: true
-          tags: pixelopscloud/${{ matrix.service.name }}:${{ github.sha }}
+          tags: pixelopscloud/${{ matrix.service.image }}:${{ github.sha }}
 
   update-infra:
     runs-on: ubuntu-latest
@@ -51,21 +56,14 @@ jobs:
 
       - name: Update image tags
         run: |
-          for service in frontend api-gateway menu-service order-service user-service; do
-            sed -i "s|pixelopscloud/${service}:.*|pixelopscloud/${service}:${{ github.sha }}|g" k8s/${service}/deployment.yaml
+          for image in restaurant-app-frontend restaurant-app-api-gateway restaurant-app-menu-service restaurant-app-order-service restaurant-app-user-service; do
+            find k8s/ -name "deployment.yaml" -exec sed -i "s|image: ${image}:.*|image: pixelopscloud/${image}:${{ github.sha }}|g" {} \;
           done
 
       - name: Commit and push
         run: |
           git config user.email "actions@github.com"
           git config user.name "GitHub Actions"
-
           git add .
-
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-            exit 0
-          fi
-
           git commit -m "Update image tags to ${{ github.sha }}"
           git push
