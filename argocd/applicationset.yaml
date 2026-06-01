@@ -1,0 +1,49 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+
+metadata:
+  name: restaurant-apps
+  namespace: argocd
+
+spec:
+  generators:
+    - list:
+        elements:
+          - name: frontend
+            path: k8s/frontend
+
+          - name: api-gateway
+            path: k8s/api-gateway
+
+          - name: user-service
+            path: k8s/user-service
+
+          - name: menu-service
+            path: k8s/menu-service
+
+          - name: order-service
+            path: k8s/order-service
+
+          - name: mongodb
+            path: k8s/mongodb
+
+  template:
+    metadata:
+      name: '{{name}}'
+
+    spec:
+      project: default
+
+      source:
+        repoURL: https://github.com/pixelopscloud/restaurant-app.git
+        targetRevision: dev
+        path: '{{path}}'
+
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: default
+
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
